@@ -1,34 +1,50 @@
 <!DOCTYPE html>
 <html>	
 <head>
-	<title>Cat Clicker! Click on the cat</title>
+	<title>Cat Clicker! Click on the cat - Cat Clicker Premium</title>
+	<link href='//fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
+	<link href='//fonts.googleapis.com/css?family=Chewy' rel='stylesheet' type='text/css'>
 	<style type="text/css">
 		body {
-		}
-		img {
-			border: 3px green dotted;
-			border-radius: 30px;
-			width: 240px;
-			height: 200px;
+			font-family: 'Chewy', cursive;
+			text-align: center;
+			color: brown;
 		}
 
-		.catTitle {
-			color: violet;
+		#catDisplay {
+			background-color: violet;
+			width: 1000px;
+			height: auto;
+			float: left;
+			border: 5px pink solid;
+			border-radius: 10px;
+			margin-right: 10px;
+			text-align: center;
+			color:  #99ff33;
 		}
 
-		#timesText {
+		.clicked {
 			color: green;
 		}
 
-		.catDiv {
-			float: center;
-			margin: 10px;
+		.catPic {
+			border-radius: 10px;
+			border: 4px #ccff33 dashed;
+		}
+
+		#catsName {
 			text-align: center;
+			font-family: 'Pacifico', cursive;
+			color: skyblue;
 		}
 	</style>
 </head>
 <body>
-	<div id="catsHolder"></div>
+	<h1>Clicking 'em cats - Cat Clicker Premium</h1>
+	<div id="catDisplay">
+	</div>
+	<div id="catsName">
+	</div>
 	<script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
 	<script type="text/javascript" src="js/main.js"></script>
 </body>
