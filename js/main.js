@@ -121,7 +121,7 @@ $(document).ready(function () {
 	 		catDisplayView.init()
 	 		catDisplayView.render()
 	 	}
-	 }currentCat
+	 }
 
 
 	 // catDisplay - view 
