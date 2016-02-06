@@ -1,4 +1,16 @@
 $(document).ready(function () {
+	/*
+	 * Problems in this code
+	 * The models and the views are talking directly so it's not much of a seperation of concern
+	 * Even though it's better than andy's code it's not the best way to attain modularity in code
+	 * I need to have a very important component of the code namely Octopus which talks with model
+	 * and the views and updates them depending on the problem
+	 * Also, it'll be probably better to make two views instead of one
+	 * One for:
+	 * - CatsName
+	 * - CatsDisplay
+	 */
+
 	var catsHolder = $("#catsHolder")
 
 	// almost all the code was changed
@@ -37,7 +49,7 @@ $(document).ready(function () {
 		var sideTitle = $("<h1>").text(value.name).addClass("catTitle")
 		var displayTitle = $("<h1>").text(value.name)
 		var image = $("<img />")
-						.attr("src", "assets/" + value.filename)
+						.attr("src", "assets/cats/" + value.filename)
 						.attr("alt", "cat pic " + index)
 						.addClass("catPic")
 
