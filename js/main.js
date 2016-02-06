@@ -43,50 +43,54 @@ $(document).ready(function () {
 	 		var cats = [
 				{
 					name: "soooo cute",
-					filename: "cat1.jpg",
-					clicks: 0
+					filename: "assets/cats/cat1.jpg"
 				},
 				{
 					name: "Tiger",
-					filename: "tiger.jpg",
-					clicks: 0
+					filename: "assets/cats/tiger.jpg"
+				},
+				{
+					name: "Keyboard Cat",
+					filename: "assets/cats/keyboard-cat.jpg"
 				},
 				{
 					name: "japanese cutie",
-					filename: "japancat.jpg",
-					clicks: 0
+					filename: "assets/cats/japancat.jpg"
 				},
 				{
 					name: "inspiration",
-					filename: "cat2.jpg",
-					clicks: 0
+					filename: "assets/cats/cat2.jpg"
 				},
 				{
 					name: "Two cute cats",
-					filename: "twocutecats.jpg",
-					clicks: 0
+					filename: "assets/cats/twocutecats.jpg"
 				},
 				{
 					name: "Big cat and small cute cats",
-					filename: "zoocats.jpg",
-					clicks: 0
+					filename: "assets/cats/zoocats.jpg"
 				},
 				{
 					name: "So cute it hurts",
-					filename: "hurtingcute.jpg",
-					clicks: 0
+					filename: "assets/cats/hurtingcute.jpg"
 				},
 				{
 					name: "cowboy dave",
-					filename: "cowboy-dave.jpg",
-					clicks: 0
+					filename: "assets/cats/cowboy-dave.jpg"
 				}
 			]
-			this.currentCat = null;
+
+			cats = cats.map(function (value, index) {
+				value.clicks = 0
+				return value
+			})
+
 	 		this.cats = cats
 	 	},
 	 	getCats: function () {
 	 		return this.cats
+	 	},
+	 	updateCat: function (cat, i) {
+	 		this.cats[i] = cat
 	 	},
 	 	incrementClick: function (i) {
 	 		this.cats[i].clicks++
@@ -103,6 +107,10 @@ $(document).ready(function () {
 	 	getAllCats: function () {
 	 		return model.getCats()
 	 	},
+	 	updateCat: function (cat) {
+	 		model.updateCat(cat, this.selectedImage)
+	 		catDisplayView.render()
+	 	},
 	 	getSelected: function () {
 	 		return this.selectedImage 
 	 	},
@@ -113,15 +121,16 @@ $(document).ready(function () {
 	 		this.selectedImage = i
 	 		catsNameView.changeSelect(i)
 	 		catDisplayView.render()
+	 		catAdminView.render()
 	 	},
 	 	init: function () {
 	 		this.selectedImage = 0
 	 		model.init()
 	 		catsNameView.init()
 	 		catDisplayView.init()
-	 		catDisplayView.render()
+	 		catAdminView.init()
 	 	}
-	 }
+	 }	
 
 
 	 // catDisplay - view 
@@ -130,7 +139,6 @@ $(document).ready(function () {
 	 var catDisplayView = {
 	 	init: function () {
 	 		this.catDisplay = $("#catDisplay")
-	 		this.rootDirectory = "assets/cats/"
 	 		this.cache = {}
 
 	 		this.nameHead = $("<h1>")
@@ -143,6 +151,7 @@ $(document).ready(function () {
 	 		})
 
 	 		this.catDisplay.append([this.nameHead, this.timesClick, this.catPic])
+	 		this.render()
 
 	 	},
 	 	render: function () {
@@ -155,7 +164,7 @@ $(document).ready(function () {
 	 			.text(this.setTimesClick(this.currentCat.clicks))
 
 	 		this.catPic
-	 			.attr("src", this.rootDirectory + this.currentCat.filename)
+	 			.attr("src", this.currentCat.filename)
 	 			.addClass("catPic")
 	 	},
 	 	setTimesClick: function (times) {
@@ -207,6 +216,59 @@ $(document).ready(function () {
 
 	 }
 
+	 var catAdminView = {
+	 	init: function () {
+	 		this.adminPanel = $("#adminPanel")
+	 		this.adminButton = $("#adminButton")
+	 		this.adminForm = $("#adminForm")
+
+	 		this.catName = $("#catNameInput")
+	 		this.catPicture = $("#catPictureInput")
+	 		this.clicks = $("#clickInput")
+
+	 		this.save = $("#saveBtn")
+	 		this.cancel = $("#cancelBtn")
+
+	 		
+	 		this.adminButton.on("click", function (event) {
+	 			this.adminForm.show()
+	 		}.bind(this))
+
+	 		this.save.on("click", function (event) {
+	 			var cat = {
+	 				name: this.catName.val(),
+	 				filename: this.catPicture.val(),
+	 				clicks: this.clicks.val()
+	 			}
+	 			octopus.updateCat(cat)
+	 			this.adminForm.hide()
+	 			event.preventDefault()
+	 		}.bind(this))
+
+	 		this.cancel.on("click", function (event) {
+	 			this.adminForm.hide()
+	 			event.preventDefault()
+	 		}.bind(this))
+
+
+	 		this.adminForm.hide() 
+
+	 		this.render()
+	 	},
+
+	 	// function for setting the input details of the cat at hand
+	 	setInputDetails: function (cat) {
+	 		this.catName.val(cat.name)
+	 		this.catPicture.val(cat.filename)
+	 		this.clicks.val(cat.clicks)
+	 	},
+	 	render: function () {
+	 		this.currentCat = octopus.getCurrentCat()
+
+	 		this.setInputDetails(this.currentCat)
+	 	}
+
+	 }
 
 	 octopus.init()
 })
