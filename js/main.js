@@ -1,15 +1,39 @@
+// Useful notes
+/*
+ * Problems in this code
+
+ * The models and the views are talking directly so it's not much of a seperation of concern
+ * Even though it's better than andy's code it's not the best way to attain modularity in code
+ * I need to have a very important component of the code namely Octopus which talks with model
+ * and the views and updates them depending on the problem
+ * Also, it'll be probably better to make two views instead of one
+ * One for:
+ * - CatsName
+ * - CatsDisplay
+ */
+/*
+ * Comparison with Ben's solution
+
+ * Ben's is doing less DOM manipulation than me. Instead of adding a new DOM element
+ * each time. He's just doing it once in the view before hand. And then manipulating those
+ * DOM elements to display what it wants to display.
+ * Ben is using closure instead of a $().data() method to display the data attributes
+ * CurrentCat is contianed in the model instead of the view and I think too it should be
+ * int the 
+ */
+ /*
+  * Improvements made after referring to the Ben's solution
+
+  * Instead of creating a separate DOM element now I am creating a single DOM element
+  * and manipulating it's attributes therefore avoiding new dom elements creation
+  * Instead of data attributes for the DOM manipulation I am using a closure 
+  * for all the cats names in the CatNameView for selecting
+  * Similarly, to increment the timesClick I am calling octopus and there's just one binding to 
+  * the main element picture instead of so many other bindings.
+  */
+
 $(document).ready(function () {
-	/*
-	 * Problems in this code
-	 * The models and the views are talking directly so it's not much of a seperation of concern
-	 * Even though it's better than andy's code it's not the best way to attain modularity in code
-	 * I need to have a very important component of the code namely Octopus which talks with model
-	 * and the views and updates them depending on the problem
-	 * Also, it'll be probably better to make two views instead of one
-	 * One for:
-	 * - CatsName
-	 * - CatsDisplay
-	 */
+	
 
 
 
@@ -20,6 +44,11 @@ $(document).ready(function () {
 				{
 					name: "soooo cute",
 					filename: "cat1.jpg",
+					clicks: 0
+				},
+				{
+					name: "Tiger",
+					filename: "tiger.jpg",
 					clicks: 0
 				},
 				{
@@ -53,6 +82,7 @@ $(document).ready(function () {
 					clicks: 0
 				}
 			]
+			this.currentCat = null;
 	 		this.cats = cats
 	 	},
 	 	getCats: function () {
@@ -76,6 +106,9 @@ $(document).ready(function () {
 	 	getSelected: function () {
 	 		return this.selectedImage 
 	 	},
+	 	getCurrentCat: function () {
+	 		return this.getAllCats()[this.selectedImage]
+	 	},
 	 	selectImage: function (i) {
 	 		this.selectedImage = i
 	 		catsNameView.changeSelect(i)
@@ -88,7 +121,7 @@ $(document).ready(function () {
 	 		catDisplayView.init()
 	 		catDisplayView.render()
 	 	}
-	 }
+	 }currentCat
 
 
 	 // catDisplay - view 
@@ -99,29 +132,38 @@ $(document).ready(function () {
 	 		this.catDisplay = $("#catDisplay")
 	 		this.rootDirectory = "assets/cats/"
 	 		this.cache = {}
-	 	},
-	 	render: function () {
-	 		this.catDisplay.empty()
-	 		var selectedImage = octopus.getAllCats()[octopus.getSelected()]
 
-	 		var h1 = $("<h1>")
-	 			.text(selectedImage.name)
-	 		var timesClick = $("<h2>")
-	 			.text(setTimesClick(selectedImage.clicks))
-
-	 		var catPic = $("<img>")
-	 			.attr("src", this.rootDirectory + selectedImage.filename)
+	 		this.nameHead = $("<h1>")
+	 		this.timesClick = $("<h2>")
+	 		this.catPic = $("<img>")
 	 			.addClass("catPic")
 
-	 		catPic.click(function (event) {
-	 			octopus.incrementClick(this.selectedImage)
+	 		this.catPic.click(function (event) {
+	 			octopus.incrementClick()
 	 		})
-	 		
-	 		this.catDisplay.append([h1, timesClick, catPic])
 
-	 		function setTimesClick(times) {
-	 			return "You have clicked this cute cat " + times + " " + (times > 1 ? "times" : "time")
-	 		}
+	 		this.catDisplay.append([this.nameHead, this.timesClick, this.catPic])
+
+	 	},
+	 	render: function () {
+	 		this.currentCat = octopus.getCurrentCat()
+
+	 		this.nameHead
+	 			.text(this.currentCat.name)
+
+	 		this.timesClick
+	 			.text(this.setTimesClick(this.currentCat.clicks))
+
+	 		this.catPic
+	 			.attr("src", this.rootDirectory + this.currentCat.filename)
+	 			.addClass("catPic")
+	 	},
+	 	setTimesClick: function (times) {
+	 		return "You have clicked this cute cat " + times + " " + (times > 1 ? "times" : "time")
+	 	},
+	 	incrementTimes: function () {
+	 		this.timesClick
+	 			.text(this.setTimesClick(this.currentCat.clicks))
 	 	}
 
 	 }
@@ -133,6 +175,8 @@ $(document).ready(function () {
 	 // first it will change model for selection and then it will re render the view
 	 // selected name is gotten from the octopus
 	 // rerendering this view each time is an expensive operation and should not be performed
+
+
 	 var catsNameView = {
 	 	render: function () {
 	 		var catNodes = []
@@ -140,20 +184,17 @@ $(document).ready(function () {
 	 		octopus.getAllCats().forEach(function (cat, index) {
 	 			var catName =  $("<h1>")
 	 				.text(cat.name)
-	 				.data("index", index)
 
 	 			if (selectedImage == index) {
 	 				catName.addClass("clicked")
 	 			}
 
 	 			catNodes.push(catName)
+	 			catName.click(function () {
+	 				octopus.selectImage(index)
+	 			})
 	 		})
 	 		this.catsName.append(catNodes)
-	 		this.catsName.children().click(this.selectEvent)
-	 	},
-	 	selectEvent: function (event) {
-	 		event.preventDefault()
-	 		octopus.selectImage($(this).data("index"))
 	 	},
 	 	changeSelect: function (i) {
 	 		$(this.catsName.children()).removeClass("clicked")
@@ -162,7 +203,7 @@ $(document).ready(function () {
 	 	init: function () {
 	 		this.catsName = $("#catsName")
 	 		this.render()
-	 	},
+	 	}
 
 	 }
 
